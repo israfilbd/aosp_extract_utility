@@ -63,11 +63,12 @@ jobs:
           cd device/xiaomi/apollo
           
           for commit in $(git rev-list --reverse ${{ env.commit_range }}); do
-            git cherry-pick -n $commit
-
-            if git diff --name-only | grep -E 'extract-files.sh|setup-makefiles.sh|proprietary-files.txt'; then
+            if git show --name-only --oneline $commit | grep -E 'extract-files.sh|setup-makefiles.sh|proprietary-files.txt'; then
+              
+              # Run extract-files.sh from the device tree
               bash extract-files.sh ${{ github.workspace }}/dump
 
+              # Check for unstaged changes in vendor directory
               cd ../../../vendor/xiaomi/apollo
               if [ -n "$(git status --porcelain)" ]; then
                 git add .
@@ -77,8 +78,6 @@ jobs:
               fi
               cd -
             fi
-
-            git reset --hard HEAD
           done
 
       - name: Push Vendor Changes
