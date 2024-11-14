@@ -24,6 +24,11 @@ jobs:
       - name: Cleanup Workspace
         run: rm -rf ${{ github.workspace }}/*
 
+      - name: Set up Git credentials
+        run: |
+          git config --global user.name "dogpoopy"
+          git config --global user.email "dogpoopy.git@gmail.com"
+
       - name: Clone stripped clang and jdk21
         run: |
           git clone https://gitlab.com/dogpoopy/blobs_extractor.git .
