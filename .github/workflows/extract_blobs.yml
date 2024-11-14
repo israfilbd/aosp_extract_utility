@@ -58,18 +58,20 @@ jobs:
 
           echo "commit_range=$commit_range" >> $GITHUB_ENV
 
+      - name: Fetch Commits in Device Tree
+        run: |
+          cd device/xiaomi/apollo
+          git fetch --all
+
       - name: Process Commits in Device Tree
         run: |
           cd device/xiaomi/apollo
           
           for commit in $(git rev-list --reverse ${{ env.commit_range }}); do
             if git show --name-only --oneline $commit | grep -E 'extract-files.sh|setup-makefiles.sh|proprietary-files.txt'; then
-              
-              # Run extract-files.sh from the device tree
               bash extract-files.sh ${{ github.workspace }}/dump
-
-              # Check for unstaged changes in vendor directory
               cd ../../../vendor/xiaomi/apollo
+              git fetch https://github.com/aosp-realm/android_device_xiaomi_apollo $commit
               if [ -n "$(git status --porcelain)" ]; then
                 git add .
                 git commit --reuse-message="$commit" --author="$(git show -s --format='%an <%ae>' $commit)"
