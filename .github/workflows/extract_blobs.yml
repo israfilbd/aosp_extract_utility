@@ -24,11 +24,6 @@ jobs:
       - name: Cleanup Workspace
         run: rm -rf ${{ github.workspace }}/*
 
-      - name: Set up Git credentials
-        run: |
-          git config --global user.name "dogpoopy"
-          git config --global user.email "dogpoopy.git@gmail.com"
-
       - name: Clone stripped clang and jdk21
         run: |
           git clone https://gitlab.com/dogpoopy/blobs_extractor.git .
@@ -85,4 +80,6 @@ jobs:
       - name: Push Vendor Changes
         run: |
           cd vendor/xiaomi/apollo
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
           git push origin ${{ github.event.inputs.VENDOR_BRANCH }}
