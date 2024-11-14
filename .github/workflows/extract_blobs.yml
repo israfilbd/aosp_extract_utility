@@ -62,8 +62,8 @@ jobs:
           for commit in $(git rev-list --reverse ${{ env.commit_range }}); do
             if git show --name-only $commit | grep -qE 'extract-files.sh|setup-makefiles.sh|proprietary-files.txt'; then
               bash extract-files.sh ${{ github.workspace }}/dump
+              
               cd ../../../vendor/xiaomi/apollo
-              git fetch https://github.com/aosp-realm/android_device_xiaomi_apollo $commit
               if [ -n "$(git status --porcelain)" ]; then
                 git add .
                 commit_message=$(git log -1 --format=%B $commit)
