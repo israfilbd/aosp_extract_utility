@@ -70,7 +70,7 @@ jobs:
                 commit_author=$(git log -1 --format="%an <%ae>" $commit)
                 git commit -m "$commit_message" --author="$commit_author"
               fi
-              cd -
+              cd ../../../device/xiaomi/apollo
             fi
           done
 
