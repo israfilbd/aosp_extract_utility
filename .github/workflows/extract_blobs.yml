@@ -39,15 +39,12 @@ jobs:
           git clone --depth=1 -b lineage-22.0 https://github.com/LineageOS/android_prebuilts_extract-tools.git prebuilts/extract-tools
           git clone --depth=1 -b lineage-22.0 https://github.com/LineageOS/android_tools_extract-utils.git tools/extract-utils
 
-      # Step 2: Clone Device, Vendor, and Dump Repositories
       - name: Clone Device, Vendor, and Dump
         run: |
           git clone https://github.com/aosp-realm/android_device_xiaomi_apollo -b ${{ github.event.inputs.DEVICE_BRANCH }} device/xiaomi/apollo
           git clone https://github.com/aosp-realm/android_vendor_xiaomi_apollo -b ${{ github.event.inputs.VENDOR_BRANCH }} vendor/xiaomi/apollo
-          
           git clone --depth 1 --single-branch https://gitlab.com/dogpoopy/apollo_dump_V14.0.4.0.SJDMIXM.git dump
 
-      # Step 3: Set Commit Range Starting from User-Specified Commit
       - name: Set Commit Range Starting from User-Specified Commit
         id: set_commit_range
         run: |
@@ -66,11 +63,9 @@ jobs:
           cd device/xiaomi/apollo
           
           for commit in $(git rev-list --reverse ${{ env.commit_range }}); do
-            # Apply each commit individually with cherry-pick to avoid detached HEAD
             git cherry-pick -n $commit
 
             if git diff --name-only | grep -E 'extract-files.sh|setup-makefiles.sh|proprietary-files.txt'; then
-              
               bash extract-files.sh ${{ github.workspace }}/dump
 
               cd ../../../vendor/xiaomi/apollo
@@ -80,13 +75,13 @@ jobs:
               else
                 echo "No changes in vendor directory, skipping commit."
               fi
-              cd - # Return to device directory
+              cd -
             fi
 
             git reset --hard HEAD
           done
-          
+
       - name: Push Vendor Changes
         run: |
           cd vendor/xiaomi/apollo
-          git push ${{ github.event.inputs.VENDOR_BRANCH }}
+          git push origin ${{ github.event.inputs.VENDOR_BRANCH }}
