@@ -85,6 +85,5 @@ jobs:
       - name: Push Vendor Changes
         run: |
           cd vendor/xiaomi/apollo
-          git config --global user.name "${{ github.actor }}"
-          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/aosp-realm/android_vendor_xiaomi_apollo.git
           git push origin ${{ github.event.inputs.VENDOR_BRANCH }}
