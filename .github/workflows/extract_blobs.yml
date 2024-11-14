@@ -85,4 +85,4 @@ jobs:
       - name: Push Vendor Changes
         run: |
           cd vendor/xiaomi/apollo
-          git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/aosp-realm/android_vendor_xiaomi_apollo.git" ${{ github.event.inputs.VENDOR_BRANCH }}
+          git push "https://x-access-token:${{ secrets.PAT }}@github.com/aosp-realm/android_vendor_xiaomi_apollo.git" ${{ github.event.inputs.VENDOR_BRANCH }}
