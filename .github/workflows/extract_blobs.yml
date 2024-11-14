@@ -69,6 +69,7 @@ jobs:
                 commit_message=$(git log -1 --format=%B $commit)
                 commit_author=$(git log -1 --format="%an <%ae>" $commit)
                 git commit -m "$commit_message" --author="$commit_author"
+                git push "https://x-access-token:${{ secrets.PAT }}@github.com/aosp-realm/android_vendor_xiaomi_apollo.git" ${{ github.event.inputs.VENDOR_BRANCH }}
               fi
               cd - > /dev/null
             fi
