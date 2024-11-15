@@ -46,6 +46,8 @@ jobs:
           git config --global user.signingkey "${{ github.workspace }}/key.pub"
           git config --global gpg.format ssh
           git config --global commit.gpgsign true
+          ls -l ${{ github.workspace }}/key.pub
+          cat ${{ github.workspace }}/key.pub
           
       - name: Clone Extraction Utilities
         run: |
@@ -71,6 +73,9 @@ jobs:
 
       - name: Process and Commit Changes
         run: |
+          ls -l ${{ github.workspace }}/key.pub
+          cat ${{ github.workspace }}/key.pub
+
           process_commit() {
             commit_hash=$1
             bash extract-files.sh ${{ github.workspace }}/dump
