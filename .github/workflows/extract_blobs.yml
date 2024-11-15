@@ -41,8 +41,8 @@ jobs:
       - name: Set up SSH Key for GPG Signing (Optional)
         if: ${{ inputs.SIGN_COMMITS == 'true' }}
         run: |
-          echo "${{ secrets.SSH_PUBKEY }}" > $HOME/key.pub
-          git config --global user.signingkey "$HOME/key.pub"
+          echo "${{ secrets.SSH_PUBKEY }}" > ${{ github.workspace }}/id_ed25519.pub
+          git config --global user.signingkey "${{ github.workspace }}/id_ed25519.pub"
           git config --global gpg.format ssh
           git config --global commit.gpgsign true
           
