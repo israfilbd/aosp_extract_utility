@@ -57,21 +57,26 @@ jobs:
           fi
           echo "commit_range=$commit_range" >> $GITHUB_ENV
 
-      - name: Process Commits in Device Tree
+      - name: Process and Commit Changes
         run: |
-          cd device/xiaomi/apollo
+          process_commit() {
+            commit_hash=$1
+            bash extract-files.sh ${{ github.workspace }}/dump
+            cd ${{ github.workspace }}/vendor/xiaomi/apollo
+            if [ -n "$(git status --porcelain)" ]; then
+              commit_message=$(cd ${{ github.workspace }}/device/xiaomi/apollo && git log -1 --format=%B $commit_hash)
+              commit_author=$(cd ${{ github.workspace }}/device/xiaomi/apollo && git log -1 --format="%an <%ae>" $commit_hash)
+              git add .
+              git commit -m "$commit_message" --author="$commit_author"
+            fi
+            cd ${{ github.workspace }}/device/xiaomi/apollo
+          }
+
+          cd ${{ github.workspace }}/device/xiaomi/apollo
           for commit in $(git rev-list --reverse ${{ env.commit_range }}); do
             if git show --name-only $commit | grep -qE 'extract-files.sh|setup-makefiles.sh|proprietary-files.txt'; then
-              bash extract-files.sh ${{ github.workspace }}/dump
-              cd ../../../vendor/xiaomi/apollo
-              git fetch https://github.com/aosp-realm/android_device_xiaomi_apollo $commit
-              if [ -n "$(git status --porcelain)" ]; then
-                git add .
-                commit_message=$(git log -1 --format=%B $commit)
-                commit_author=$(git log -1 --format="%an <%ae>" $commit)
-                git commit -m "$commit_message" --author="$commit_author"
-              fi
-              cd ../../../device/xiaomi/apollo
+              git checkout $commit
+              process_commit $commit
             fi
           done
 
