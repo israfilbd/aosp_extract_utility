@@ -28,6 +28,11 @@ jobs:
       - name: Cleanup Workspace
         run: rm -rf ${{ github.workspace }}/*
 
+      - name: Set-up main directory with stripped clang and jdk21
+        run: |
+          git clone --depth 1 --single-branch -b main https://gitlab.com/dogpoopy/blobs_extractor.git .
+          rm -rf .git
+
       - name: Set up Git credentials
         run: |
           git config --global user.name "dogpoopy"
@@ -36,16 +41,11 @@ jobs:
       - name: Set up SSH Key for GPG Signing (Optional)
         if: ${{ inputs.SIGN_COMMITS == 'true' }}
         run: |
-          echo "${{ secrets.SSH_PUBKEY }}" > $HOME/key.pub
-          chmod 400 $HOME/key.pub
-          git config --global user.signingkey "$HOME/key.pub"
+          echo "${{ secrets.SSH_PUBKEY }}" > key.pub
+          chmod 400 key.pub
+          git config --global user.signingkey "key.pub"
           git config --global gpg.format ssh
           git config --global commit.gpgsign true
-
-      - name: Download stripped clang and jdk21
-        run: |
-          git clone --depth 1 --single-branch -b main https://gitlab.com/dogpoopy/blobs_extractor.git .
-          rm -rf .git
           
       - name: Clone Extraction Utilities
         run: |
