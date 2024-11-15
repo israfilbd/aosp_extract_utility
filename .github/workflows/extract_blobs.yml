@@ -44,7 +44,7 @@ jobs:
 
       - name: Clone stripped clang and jdk21
         run: |
-          git clone --bare https://gitlab.com/dogpoopy/blobs_extractor.git .
+          git archive --remote=https://gitlab.com/dogpoopy/blobs_extractor.git HEAD | tar -x
 
       - name: Clone Extraction Utilities
         run: |
