@@ -41,13 +41,10 @@ jobs:
       - name: Set up SSH Key for GPG Signing (Optional)
         if: ${{ inputs.SIGN_COMMITS == 'true' }}
         run: |
-          echo "${{ secrets.SSH_PUBKEY }}" > ${{ github.workspace }}/id_ed25519.pub
-          git config --global user.signingkey "${{ github.workspace }}/id_ed25519.pub"
+          git config --global user.signingkey "${{ secrets.SSH_PUBKEY }}"
           git config --global gpg.format ssh
           git config --global commit.gpgsign true
-          ls
-          ls -l ${{ github.workspace }}/id_ed25519.pub
-          
+
       - name: Clone Extraction Utilities
         run: |
           git clone --depth=1 -b lineage-22.0 https://github.com/LineageOS/android_prebuilts_extract-tools.git prebuilts/extract-tools
@@ -72,9 +69,6 @@ jobs:
 
       - name: Process and Commit Changes
         run: |
-          ls ${{ github.workspace }}
-          ls -l ${{ github.workspace }}/id_ed25519.pub
-          
           process_commit() {
             commit_hash=$1
             bash extract-files.sh ${{ github.workspace }}/dump
