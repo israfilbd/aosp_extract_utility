@@ -42,10 +42,12 @@ jobs:
           git config --global gpg.format ssh
           git config --global commit.gpgsign true
 
-      - name: Clone stripped clang and jdk21
+      - name: Download stripped clang and jdk21
         run: |
-          git archive --remote=https://gitlab.com/dogpoopy/blobs_extractor.git HEAD | tar -x
-
+          wget -O prebuilts.zip https://gitlab.com/dogpoopy/blobs_extractor/-/archive/main/blobs_extractor-main.zip
+          unzip prebuilts.zip
+          rm -rf prebuilts.zip
+          
       - name: Clone Extraction Utilities
         run: |
           git clone --depth=1 -b lineage-22.0 https://github.com/LineageOS/android_prebuilts_extract-tools.git prebuilts/extract-tools
