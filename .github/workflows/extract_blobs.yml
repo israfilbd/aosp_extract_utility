@@ -36,11 +36,7 @@ jobs:
       - name: Set up SSH Key for GPG Signing (Optional)
         if: ${{ inputs.SIGN_COMMITS == 'true' }}
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVKEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          eval $(ssh-agent -s)
-          ssh-add ~/.ssh/id_ed25519
+          git config --global user.signingkey "${{ secrets.SSH_PRIVKEY }}"
           git config --global gpg.format ssh
           git config --global commit.gpgsign true
 
