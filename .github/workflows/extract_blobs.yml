@@ -65,10 +65,11 @@ jobs:
             if [ -n "$(git status --porcelain)" ]; then
               commit_message=$(cd ${{ github.workspace }}/device/xiaomi/apollo && git log -1 --format=%B $commit_hash)
               commit_author=$(cd ${{ github.workspace }}/device/xiaomi/apollo && git log -1 --format="%an <%ae>" $commit_hash)
+              commit_date=$(cd ${{ github.workspace }}/device/xiaomi/apollo && git log -1 --format=%aI $commit_hash)
+
               git add .
-              git commit -m "$commit_message" --author="$commit_author"
+              GIT_COMMITTER_DATE="$commit_date" git commit -m "$commit_message" --author="$commit_author"
             fi
-            cd ${{ github.workspace }}/device/xiaomi/apollo
           }
 
           cd ${{ github.workspace }}/device/xiaomi/apollo
