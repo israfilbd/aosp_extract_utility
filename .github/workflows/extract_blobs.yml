@@ -85,6 +85,7 @@ jobs:
               git add .
               git commit -m "$commit_message" --author="$commit_author"
             fi
+            cd ${{ github.workspace }}/device/xiaomi/apollo
           }
 
           cd ${{ github.workspace }}/device/xiaomi/apollo
