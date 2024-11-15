@@ -12,6 +12,10 @@ on:
       STARTING_HASH:
         description: 'Commit hash to start processing from (optional)'
         required: false
+      SIGN_COMMITS:
+        description: 'Enable GPG signing for commits'
+        default: 'false'
+        required: false
 
 jobs:
   Extract-Sync:
@@ -28,6 +32,13 @@ jobs:
         run: |
           git config --global user.name "dogpoopy"
           git config --global user.email "dogpoopy.git@gmail.com"
+
+      - name: Configure Git for GPG ssh Signing (Optional)
+        if: ${{ inputs.SIGN_COMMITS == 'true' }}
+        run: |
+          git config --global gpg.format ssh
+          git config --global user.signingkey "${{ github.workspace }}/.ssh/id_ed25519.pub"
+          git config --global commit.gpgsign true
 
       - name: Clone stripped clang and jdk21
         run: |
@@ -66,9 +77,9 @@ jobs:
               commit_message=$(cd ${{ github.workspace }}/device/xiaomi/apollo && git log -1 --format=%B $commit_hash)
               commit_author=$(cd ${{ github.workspace }}/device/xiaomi/apollo && git log -1 --format="%an <%ae>" $commit_hash)
               commit_date=$(cd ${{ github.workspace }}/device/xiaomi/apollo && git log -1 --format=%aI $commit_hash)
-
+              export GIT_COMMITTER_DATE="$commit_date"
               git add .
-              GIT_COMMITTER_DATE="$commit_date" git commit -m "$commit_message" --author="$commit_author"
+              git commit -m "$commit_message" --author="$commit_author"
             fi
           }
 
