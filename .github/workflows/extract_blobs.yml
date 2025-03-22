@@ -53,17 +53,15 @@ jobs:
           git config --global gpg.format ssh
           git config --global commit.gpgsign true
 
-      - name: Clone Extraction Utilities
+      - name: Clone Device, Vendor, Dump and Extract Tools
         run: |
-          git clone --depth=1 -b lineage-22.0 https://github.com/LineageOS/android_prebuilts_extract-tools.git prebuilts/extract-tools
-          git clone --depth=1 -b lineage-22.0 https://github.com/LineageOS/android_tools_extract-utils.git tools/extract-utils
-
-      - name: Clone Device, Vendor, and Dump
-        run: |
+          git clone --depth=1 -b lineage-22.1 https://github.com/LineageOS/android_prebuilts_extract-tools.git prebuilts/extract-tools
+          git clone --depth=1 -b lineage-22.1 https://github.com/LineageOS/android_tools_extract-utils.git tools/extract-utils
           git clone https://github.com/aosp-realm/android_device_xiaomi_mondrian -b ${{ github.event.inputs.DEVICE_BRANCH }} device/xiaomi/mondrian
           git clone https://github.com/aosp-realm/android_vendor_xiaomi_mondrian -b ${{ github.event.inputs.VENDOR_BRANCH }} vendor/xiaomi/mondrian
           git clone --depth 1 --single-branch -b main https://gitlab.com/dogpoopy/V816.0.10.0.UMNMIXM.git dump
           git clone --depth 1 --single-branch -b ingot-user-14-UKQ1.240227.155-155-release-keys https://dumps.tadiphone.dev/dumps/osom/ingot.git dump1
+
       - name: Set Commit Range Starting from User-Specified Commit
         id: set_commit_range
         run: |
