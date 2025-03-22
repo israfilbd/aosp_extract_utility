@@ -25,6 +25,9 @@ jobs:
         working-directory: ${{ github.workspace }}
 
     steps:
+      - name: Clean up the environment
+        uses: rokibhasansagar/slimhub_actions@main
+
       - name: Cleanup Workspace
         run: rm -rf ${{ github.workspace }}/*
 
