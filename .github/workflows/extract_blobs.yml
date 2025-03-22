@@ -14,7 +14,7 @@ on:
         required: false
       SIGN_COMMITS:
         description: 'Enable GPG signing for commits'
-        default: 'false'
+        default: 'true'
         required: false
 
 jobs:
@@ -57,14 +57,14 @@ jobs:
 
       - name: Clone Device, Vendor, and Dump
         run: |
-          git clone https://github.com/aosp-realm/android_device_xiaomi_apollo -b ${{ github.event.inputs.DEVICE_BRANCH }} device/xiaomi/apollo
-          git clone https://github.com/aosp-realm/android_vendor_xiaomi_apollo -b ${{ github.event.inputs.VENDOR_BRANCH }} vendor/xiaomi/apollo
-          git clone --depth 1 --single-branch https://gitlab.com/dogpoopy/apollo_dump_V14.0.4.0.SJDMIXM.git dump
+          git clone https://github.com/aosp-realm/android_device_xiaomi_mondrian -b ${{ github.event.inputs.DEVICE_BRANCH }} device/xiaomi/mondrian
+          git clone https://github.com/aosp-realm/android_vendor_xiaomi_mondrian -b ${{ github.event.inputs.VENDOR_BRANCH }} vendor/xiaomi/mondrian
+          git clone --depth 1 --single-branch -b main https://gitlab.com/dogpoopy/V816.0.10.0.UMNMIXM.git dump
           
       - name: Set Commit Range Starting from User-Specified Commit
         id: set_commit_range
         run: |
-          cd device/xiaomi/apollo
+          cd device/xiaomi/mondrian
           if [ -n "${{ github.event.inputs.STARTING_HASH }}" ]; then
             commit_range="${{ github.event.inputs.STARTING_HASH }}..HEAD"
           else
@@ -74,24 +74,27 @@ jobs:
 
       - name: Process and Commit Changes
         run: |
+          export PYTHONPATH=${{ github.workspace }}/tools/extract-utils:$PYTHONPATH
+
           process_commit() {
             commit_hash=$1
-            bash extract-files.sh ${{ github.workspace }}/dump
-            cd ${{ github.workspace }}/vendor/xiaomi/apollo
+            python3 extract-files.py ${{ github.workspace }}/dump
+            python3 extract-files.py -m
+            cd ${{ github.workspace }}/vendor/xiaomi/mondrian
             if [ -n "$(git status --porcelain)" ]; then
-              commit_message=$(cd ${{ github.workspace }}/device/xiaomi/apollo && git log -1 --format=%B $commit_hash)
-              commit_author=$(cd ${{ github.workspace }}/device/xiaomi/apollo && git log -1 --format="%an <%ae>" $commit_hash)
-              commit_date=$(cd ${{ github.workspace }}/device/xiaomi/apollo && git log -1 --format=%ci $commit_hash)
+              commit_message=$(cd ${{ github.workspace }}/device/xiaomi/mondrian && git log -1 --format=%B $commit_hash)
+              commit_author=$(cd ${{ github.workspace }}/device/xiaomi/mondrian && git log -1 --format="%an <%ae>" $commit_hash)
+              commit_date=$(cd ${{ github.workspace }}/device/xiaomi/mondrian && git log -1 --format=%ci $commit_hash)
               export GIT_COMMITTER_DATE="$commit_date"
               git add .
               git commit -m "$commit_message" --author="$commit_author"
             fi
-            cd ${{ github.workspace }}/device/xiaomi/apollo
+            cd ${{ github.workspace }}/device/xiaomi/mondrian
           }
 
-          cd ${{ github.workspace }}/device/xiaomi/apollo
+          cd ${{ github.workspace }}/device/xiaomi/mondrian
           for commit in $(git rev-list --reverse ${{ env.commit_range }}); do
-            if git show --name-only $commit | grep -qE 'extract-files.sh|setup-makefiles.sh|proprietary-files.txt'; then
+            if git show --name-only $commit | grep -qE 'extract-files.py|proprietary-files.txt'; then
               git checkout $commit
               process_commit $commit
             fi
@@ -99,5 +102,5 @@ jobs:
 
       - name: Push Vendor Changes
         run: |
-          cd vendor/xiaomi/apollo
-          git push "https://x-access-token:${{ secrets.PAT }}@github.com/aosp-realm/android_vendor_xiaomi_apollo.git" ${{ github.event.inputs.VENDOR_BRANCH }}
+          cd vendor/xiaomi/mondrian
+          git push "https://x-access-token:${{ secrets.PAT }}@github.com/aosp-realm/android_vendor_xiaomi_mondrian.git" ${{ github.event.inputs.VENDOR_BRANCH }}
