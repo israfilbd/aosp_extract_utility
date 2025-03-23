@@ -60,7 +60,6 @@ jobs:
           git clone https://github.com/aosp-realm/android_device_xiaomi_mondrian -b ${{ github.event.inputs.DEVICE_BRANCH }} device/xiaomi/mondrian
           git clone https://github.com/aosp-realm/android_vendor_xiaomi_mondrian -b ${{ github.event.inputs.VENDOR_BRANCH }} vendor/xiaomi/mondrian
           git clone --depth 1 --single-branch -b main https://gitlab.com/dogpoopy/V816.0.10.0.UMNMIXM.git dump
-          git clone --depth 1 --single-branch -b ingot-user-14-UKQ1.240227.155-155-release-keys https://dumps.tadiphone.dev/dumps/osom/ingot.git dump1
 
       - name: Set Commit Range Starting from User-Specified Commit
         id: set_commit_range
@@ -79,9 +78,7 @@ jobs:
 
           process_commit() {
             commit_hash=$1
-            python3 extract-files.py ${{ github.workspace }}/dump1
             python3 extract-files.py ${{ github.workspace }}/dump
-            python3 extract-files.py -k -s 'ingot' ${{ github.workspace }}/dump1
             python3 extract-files.py -m
             cd ${{ github.workspace }}/vendor/xiaomi/mondrian
             if [ -n "$(git status --porcelain)" ]; then
