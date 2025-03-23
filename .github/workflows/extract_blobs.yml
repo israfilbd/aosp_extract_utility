@@ -106,4 +106,4 @@ jobs:
       - name: Push Vendor Changes
         run: |
           cd vendor/xiaomi/mondrian
-          git push "https://x-access-token:${{ secrets.PAT }}@github.com/aosp-realm/android_vendor_xiaomi_mondrian.git" ${{ github.event.inputs.VENDOR_BRANCH }}
+          git push -f "https://x-access-token:${{ secrets.PAT }}@github.com/aosp-realm/android_vendor_xiaomi_mondrian.git" ${{ github.event.inputs.VENDOR_BRANCH }}
