@@ -38,9 +38,9 @@ jobs:
 
       - name: Set up Git credentials
         run: |
-          git config --global user.name "dogpoopy"
-          git config --global user.email "dogpoopy.git@gmail.com"
-
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+      
       - name: Set up SSH Key for GPG Signing (Optional)
         if: ${{ inputs.SIGN_COMMITS == 'true' }}
         run: |
