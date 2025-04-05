@@ -57,14 +57,13 @@ jobs:
         run: |
           git clone --depth=1 -b lineage-22.1 https://github.com/LineageOS/android_prebuilts_extract-tools.git prebuilts/extract-tools
           git clone --depth=1 -b lineage-22.1 https://github.com/LineageOS/android_tools_extract-utils.git tools/extract-utils
-          git clone https://github.com/aosp-realm/android_device_xiaomi_mondrian -b ${{ github.event.inputs.DEVICE_BRANCH }} device/xiaomi/mondrian
-          git clone https://github.com/aosp-realm/android_vendor_xiaomi_mondrian -b ${{ github.event.inputs.VENDOR_BRANCH }} vendor/xiaomi/mondrian
-          git clone --depth 1 --single-branch -b main https://gitlab.com/dogpoopy/V816.0.10.0.UMNMIXM.git dump
+          git clone https://github.com/ij-project/device_realme_RMX1901 -b ${{ github.event.inputs.DEVICE_BRANCH }} device/realme/RMX1901
+          git clone https://gitlab.com/ij-israfil/vendor_realme_RMX1901 -b ${{ github.event.inputs.VENDOR_BRANCH }} vendor/realme/RMX1901
 
       - name: Set Commit Range Starting from User-Specified Commit
         id: set_commit_range
         run: |
-          cd device/xiaomi/mondrian
+          cd device/realme/RMX1901
           if [ -n "${{ github.event.inputs.STARTING_HASH }}" ]; then
             commit_range="${{ github.event.inputs.STARTING_HASH }}..HEAD"
           else
@@ -78,21 +77,20 @@ jobs:
 
           process_commit() {
             commit_hash=$1
-            python3 extract-files.py ${{ github.workspace }}/dump
             python3 extract-files.py -m
-            cd ${{ github.workspace }}/vendor/xiaomi/mondrian
+            cd ${{ github.workspace }}/vendor/realme/RMX1901
             if [ -n "$(git status --porcelain)" ]; then
-              commit_message=$(cd ${{ github.workspace }}/device/xiaomi/mondrian && git log -1 --format=%B $commit_hash)
-              commit_author=$(cd ${{ github.workspace }}/device/xiaomi/mondrian && git log -1 --format="%an <%ae>" $commit_hash)
-              commit_date=$(cd ${{ github.workspace }}/device/xiaomi/mondrian && git log -1 --format=%ci $commit_hash)
+              commit_message=$(cd ${{ github.workspace }}/device/realme/RMX1901 && git log -1 --format=%B $commit_hash)
+              commit_author=$(cd ${{ github.workspace }}/device/realme/RMX1901 && git log -1 --format="%an <%ae>" $commit_hash)
+              commit_date=$(cd ${{ github.workspace }}/device/realme/RMX1901 && git log -1 --format=%ci $commit_hash)
               export GIT_COMMITTER_DATE="$commit_date"
               git add .
               git commit -m "$commit_message" --author="$commit_author"
             fi
-            cd ${{ github.workspace }}/device/xiaomi/mondrian
+            cd ${{ github.workspace }}/device/realme/RMX1901
           }
 
-          cd ${{ github.workspace }}/device/xiaomi/mondrian
+          cd ${{ github.workspace }}/device/realme/RMX1901
           for commit in $(git rev-list --reverse ${{ env.commit_range }}); do
             if git show --name-only $commit | grep -qE 'extract-files.py|proprietary-files.txt'; then
               git checkout $commit
@@ -102,5 +100,5 @@ jobs:
 
       - name: Push Vendor Changes
         run: |
-          cd vendor/xiaomi/mondrian
+          cd vendor/realme/RMX1901
           git push -f "https://x-access-token:${{ secrets.PAT }}@github.com/aosp-realm/android_vendor_xiaomi_mondrian.git" ${{ github.event.inputs.VENDOR_BRANCH }}
